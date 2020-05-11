@@ -118,3 +118,7 @@ Ks = K_d_Int(:,2:end)
 %       State vector should be calculated using backward differences
 %       no estimation needed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+wc = 2*2*pi;
+Ts = 1/200;
