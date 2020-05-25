@@ -1,0 +1,4 @@
+CASE 1:
+stepresponse : 0 -> pi/3
+Q  = diag(4 20 0 0)
+R = 1.5

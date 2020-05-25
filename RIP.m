@@ -68,6 +68,25 @@ OB = obsv(A,C);
 rank(OB)
 % System is observable
 
+%pzmap + make markers larger
+hpz = pzplot(sys)
+set(hpz.allaxes.Children(1).Children, 'MarkerSize', 12, 'LineWidth', 4)
+
+% possibly bode diagram ? 
+[MAG,PHASE,W] = bode(sys);
+MM = squeeze(MAG); PP = squeeze(PHASE);
+figure(1); clf(1) 
+loglog(W, MM(1,:), 'b', 'LineWidth', 2);
+hold on;
+loglog(W, MM(2,:), 'g--', 'LineWidth', 2);
+xlabel('Frequency'); ylabel('Magnitude');
+grid on;
+figure(2); clf(2);
+semilogx(W, PP(1,:), 'b', 'LineWidth', 2);
+hold on;
+semilogx(W, PP(2,:), 'g--', 'LineWidth', 2);
+xlabel('Frequency'); ylabel('Phase');
+grid on;
 % -> System is said to be minimal as its observable and controllable
 % -> System is also detectable and stabilizable as the unstable modes are
 %         observable and controllable.
@@ -96,21 +115,34 @@ rank(OB)
 NA = [ 0, C(1,:); zeros(n_states,1), A];
 
 NB = [ D(1,:);B];
-
+sysAG = ss(NA,NB,[0,1,0,0,0;  0,0,1,0,0], zeros(2,1));
 CO = ctrb(NA,NB);
 rank(CO)
 % Rank of the controlability matrix is the same size as the nummber of
 % augmented states -> doable
 
-Q_i = diag([4 20 0 0]);
-Q_i = diag([10 50 0 0]);
-Q_i = [ 1, zeros(1,4); zeros(4,1), Q_i]; 
 R_i = 1.5;
+%%_% Case 1
+% Q_i = diag([4 20 0 0]);
+% Q_i = [ 1, zeros(1,4); zeros(4,1), Q_i];
+
+%%_% Case 2
+% Q_i = diag([4 20 0 0]);
+%Q_i = [ 8, zeros(1,4); zeros(4,1), Q_i];
+
+%%_% Case 3
+Q_i = diag([4 20 0 600]);
+Q_i = [ 8, zeros(1,4); zeros(4,1), Q_i]; 
+
 [K_d_Int ,~, CLP] = lqr(NA,NB,Q_i, R_i);
 
+Ki = K_d_Int(:,1);
+Ks = K_d_Int(:,2:end);
 
-Ki = K_d_Int(:,1)
-Ks = K_d_Int(:,2:end)   
+%close loop poles
+K_adj = -NB*K_d_Int; 
+Closed_A = NA + K_adj;
+eig(Closed_A) % --> poles of closed loop system
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,6 +151,6 @@ Ks = K_d_Int(:,2:end)
 %       no estimation needed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-wc = 2*2*pi;
+fc = 1.5;
+wc = 2*pi*fc;
 Ts = 1/200;
