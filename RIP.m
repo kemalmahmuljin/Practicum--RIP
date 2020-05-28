@@ -2,7 +2,7 @@
 % 0. Initialization
 %   First run this before any .slx file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all;
+clear all;close all; clc;
 %% Loading references and setting parameters
 n_states = 4;
 n_inputs = 1;
@@ -67,26 +67,26 @@ rank(CO)
 OB = obsv(A,C);
 rank(OB)
 % System is observable
+% 
+% %pzmap + make markers larger
+% hpz = pzplot(sys)
+% set(hpz.allaxes.Children(1).Children, 'MarkerSize', 12, 'LineWidth', 4)
 
-%pzmap + make markers larger
-hpz = pzplot(sys)
-set(hpz.allaxes.Children(1).Children, 'MarkerSize', 12, 'LineWidth', 4)
-
-% possibly bode diagram ? 
-[MAG,PHASE,W] = bode(sys);
-MM = squeeze(MAG); PP = squeeze(PHASE);
-figure(1); clf(1) 
-loglog(W, MM(1,:), 'b', 'LineWidth', 2);
-hold on;
-loglog(W, MM(2,:), 'g--', 'LineWidth', 2);
-xlabel('Frequency'); ylabel('Magnitude');
-grid on;
-figure(2); clf(2);
-semilogx(W, PP(1,:), 'b', 'LineWidth', 2);
-hold on;
-semilogx(W, PP(2,:), 'g--', 'LineWidth', 2);
-xlabel('Frequency'); ylabel('Phase');
-grid on;
+% % possibly bode diagram ? 
+% [MAG,PHASE,W] = bode(sys);
+% MM = squeeze(MAG); PP = squeeze(PHASE);
+% figure(1); clf(1) 
+% loglog(W, MM(1,:), 'b', 'LineWidth', 2);
+% hold on;
+% loglog(W, MM(2,:), 'g--', 'LineWidth', 2);
+% xlabel('Frequency'); ylabel('Magnitude');
+% grid on;
+% figure(2); clf(2);
+% semilogx(W, PP(1,:), 'b', 'LineWidth', 2);
+% hold on;
+% semilogx(W, PP(2,:), 'g--', 'LineWidth', 2);
+% xlabel('Frequency'); ylabel('Phase');
+% grid on;
 % -> System is said to be minimal as its observable and controllable
 % -> System is also detectable and stabilizable as the unstable modes are
 %         observable and controllable.
@@ -122,15 +122,15 @@ rank(CO)
 % augmented states -> doable
 
 R_i = 1.5;
-%%_% Case 1
+% %_% Case 1
 % Q_i = diag([4 20 0 0]);
 % Q_i = [ 1, zeros(1,4); zeros(4,1), Q_i];
-
-%%_% Case 2
+% 
+% %_% Case 2
 % Q_i = diag([4 20 0 0]);
-%Q_i = [ 8, zeros(1,4); zeros(4,1), Q_i];
+% Q_i = [ 8, zeros(1,4); zeros(4,1), Q_i];
 
-%%_% Case 3
+%_% Case 3
 Q_i = diag([4 20 0 600]);
 Q_i = [ 8, zeros(1,4); zeros(4,1), Q_i]; 
 
@@ -142,7 +142,7 @@ Ks = K_d_Int(:,2:end);
 %close loop poles
 K_adj = -NB*K_d_Int; 
 Closed_A = NA + K_adj;
-eig(Closed_A) % --> poles of closed loop system
+polesOfClosedLoopSystem = eig(Closed_A) % --> poles of closed loop system
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -151,6 +151,6 @@ eig(Closed_A) % --> poles of closed loop system
 %       no estimation needed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fc = 1.5;
+fc =2;% 0.4;%10;% 0.2; %1.5
 wc = 2*pi*fc;
 Ts = 1/200;
